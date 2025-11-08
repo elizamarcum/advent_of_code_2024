@@ -1,21 +1,18 @@
 class Day1
   def self.part1(input)
-    input = input.split(//).map(&:to_i)
-    pairs = input.zip(input.rotate)
+    input = input.split(/\n/).map do |line|
+      line.split(/\s+/).map(&:to_i)
+    end
+    left_side, right_side = input.transpose
+    left_side.sort!
+    right_side.sort!
+    pairs = left_side.zip(right_side)
     output = pairs.inject(0) do |sum, pair|
-      addend = (pair.first == pair.last) ? pair.first : 0
-      sum + addend
+      sum + (pair.last - pair.first).abs
     end
     output
   end
 
   def self.part2(input)
-    input = input.split(//).map(&:to_i)
-    pairs = input.zip(input.rotate(input.length/2))
-    output = pairs.inject(0) do |sum, pair|
-      addend = (pair.first == pair.last) ? pair.first : 0
-      sum + addend
-    end
-    output
   end
 end
