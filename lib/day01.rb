@@ -18,9 +18,9 @@ class Day1
 
   def self.part2(input)
     left_side, right_side = self.parse_input(input).transpose
-    frequency = right_side.group_by{|i| i}
+    frequency = right_side.tally
     similarity_scores = left_side.map do
-      |number| number * (frequency[number]&.count || 0)
+      |number| number * (frequency[number] || 0)
     end
     similarity_scores.reduce(:+)
   end
