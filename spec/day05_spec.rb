@@ -45,33 +45,56 @@ describe Day5 do
   end
 
   describe Day5::PageOrderingRules do
-    describe "invalidates?" do
-      let(:sample_rule_list) do
-        [
-          [47, 53],
-          [97, 13],
-          [97, 61],
-          [97, 47],
-          [75, 29],
-          [61, 13],
-          [75, 53],
-          [29, 13],
-          [97, 29],
-          [53, 29],
-          [61, 53],
-          [97, 53],
-          [61, 29],
-          [47, 13],
-          [75, 47],
-          [97, 75],
-          [47, 61],
-          [75, 61],
-          [47, 29],
-          [75, 13],
-          [53, 13],
-        ]
+    let(:sample_rule_list) do
+      [
+        [47, 53],
+        [97, 13],
+        [97, 61],
+        [97, 47],
+        [75, 29],
+        [61, 13],
+        [75, 53],
+        [29, 13],
+        [97, 29],
+        [53, 29],
+        [61, 53],
+        [97, 53],
+        [61, 29],
+        [47, 13],
+        [75, 47],
+        [97, 75],
+        [47, 61],
+        [75, 61],
+        [47, 29],
+        [75, 13],
+        [53, 13],
+      ]
+    end
+
+    describe "repair!" do
+      it "repairs example 1" do
+        input = [75,97,47,61,53]
+        expected_output = [97,75,47,61,53]
+        Day5::PageOrderingRules.new(sample_rule_list).repair!(input)
+        _(input).must_equal expected_output
       end
 
+      it "repairs example 2" do
+        input = [61,13,29]
+        expected_output = [61,29,13]
+        Day5::PageOrderingRules.new(sample_rule_list).repair!(input)
+        _(input).must_equal expected_output
+      end
+
+      it "repairs example 3" do
+        input = [97,13,75,29,47]
+        expected_output = [97,75,47,29,13]
+        Day5::PageOrderingRules.new(sample_rule_list).repair!(input)
+        _(input).must_equal expected_output
+      end
+    end
+
+    describe "invalidates?" do
       it "is false for example one" do
         refute Day5::PageOrderingRules.new(sample_rule_list).invalidates?([75,47,61,53,29])
       end
@@ -95,7 +118,7 @@ describe Day5 do
 
   describe "part2" do
     it "overall scenario" do
-      expected = "TBD"
+      expected = 123
       actual = Day5.part2(input)
       _(actual).must_equal(expected)
     end
