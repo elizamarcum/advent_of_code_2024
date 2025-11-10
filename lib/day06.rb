@@ -17,10 +17,8 @@ class Day6
     coordinates_to_test = starting_map.each_with_index.map do |item, x, y|
       [x, y] if item == Map::MARK
     end.compact
-    puts "We have #{coordinates_to_test.count} promising starting points"
 
     coordinates_to_test.count do |pair|
-      puts "Testing putting an obstruction at #{pair}"
       x, y = pair
       updated_grid = template.to_a
       updated_grid[x][y] = Map::ADDED_OBSTRUCTION
@@ -119,7 +117,7 @@ class Day6
       grid = (input.is_a? Array)? input : input.split(/\n/).map{ |line| line.split(//) }
       super(Matrix[*grid])
       @loop_detected = false
-      @visit_list = []
+      @visit_list = Set.new()
     end
 
     def can_stand_at?(x, y)
@@ -161,8 +159,7 @@ class Day6
 
     def record_visit_to(x, y, direction)
       visit = [x, y, direction]
-      @loop_detected = @visit_list.include? visit
-      @visit_list << visit
+      @loop_detected = !@visit_list.add?(visit)
     end
   end
 end
