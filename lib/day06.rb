@@ -1,5 +1,4 @@
-require 'matrix'
-require 'delegate'
+require_relative 'general_map'
 
 class Day6
   def self.part1(input)
@@ -107,15 +106,14 @@ class Day6
     end
   end
 
-  class Map < SimpleDelegator
+  class Map < GeneralMap
     OPEN_SPACE = '.'
     MARK = 'X'
     NATURAL_OBSTRUCTION = '#'
     ADDED_OBSTRUCTION = 'O'
 
     def initialize(input)
-      grid = (input.is_a? Array)? input : input.split(/\n/).map{ |line| line.split(//) }
-      super(Matrix[*grid])
+      super(input)
       @loop_detected = false
       @visit_list = Set.new()
     end
@@ -140,10 +138,6 @@ class Day6
 
     def mark_turning!(x, y, direction)
       mark_entering!(x, y, direction)
-    end
-
-    def valid_coordinate?(x, y)
-      x >= 0 && x < column_count && y >= 0 && y < row_count
     end
 
     def to_a(with_path: false)
