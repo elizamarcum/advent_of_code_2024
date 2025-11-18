@@ -30,13 +30,42 @@ class Day9
 
     def compact!(limit: nil)
       compaction_count = 0
-      until all_free_space_contiguous? or (limit and compaction_count >= limit)
-        first_free_space = @blocks.index(FREESPACE)
-        last_file_space = @blocks.rindex{ |e| e != FREESPACE }
-        @blocks[first_free_space] = @blocks[last_file_space]
-        @blocks[last_file_space] = FREESPACE
+      compacted = []
+      free_space_to_add = 0
+      remaining = @blocks
+      until remaining.empty? or (limit and compaction_count >= limit)
+        # Confirm that there are filled blocks remaining
+        final_occupied_block = remaining.rindex{|e| e != FREESPACE}
+        break unless final_occupied_block
+
+        # Pop all of the already free space off the end of the list, saving the count for later
+        first_of_freespace_at_end = final_occupied_block + 1
+        free_space_to_add += remaining.length - first_of_freespace_at_end
+        remaining.slice!(first_of_freespace_at_end..-1)
+
+        # Stop if there is no work remaining
+        break if remaining.empty?
+
+        # Pull all of the filled space off the front of the list and tuck it into `compacted`
+        first_of_freespace_at_beginning = remaining.index(FREESPACE) or -1
+        blocks_at_beginning = remaining.slice!(0...first_of_freespace_at_beginning)
+        compacted.push(*blocks_at_beginning)
+
+        # Stop if there is no work remaining
+        break if remaining.empty?
+
+        # Take the final filled block and move it into the current free space
+        # (We do this by adding it to compacted and then removing the first item from the working list)
+        remaining.delete_at(0)
+        compacted.push remaining.delete_at(-1)
+        free_space_to_add += 1
+
+        # Increment loop counter
         compaction_count += 1
       end
+      # Update @blocks to contain the compacted blocks along with anything remaining
+      # in the working list and all the free space
+      @blocks = compacted + remaining + Array.new(free_space_to_add){ |i| FREESPACE }
     end
 
     def compact_once!
