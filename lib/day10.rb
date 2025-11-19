@@ -2,20 +2,13 @@ require_relative 'general_map'
 
 class Day10
   def self.part1(input)
-    map = Day10::Map.new(input)
-    Trailheads.for(map).sum { |trailhead| trailhead.score }
+    map = GeneralMap.new(input)
+    Trailheads.for(map).sum { |trailhead| trailhead.trailbutts.count }
   end
 
   def self.part2(input)
-    "TBD"
-  end
-
-  class Map < GeneralMap
-    attr_reader :trailheads
-
-    def initialize(input)
-      super(input)
-    end
+    map = GeneralMap.new(input)
+    Trailheads.for(map).sum { |trailhead| trailhead.trails.count }
   end
 
   class Trailheads
@@ -33,13 +26,28 @@ class Day10
       trailbutts.count
     end
 
+    def trails
+      return @trails if @trails
+      trails_so_far = [ [coords] ]
+      %w(1 2 3 4 5 6 7 8 9).each do |next_step|
+        trails_that_go_the_next_mile = []
+        trails_so_far.each do |trail|
+          next_steps = coords_of_x_reachable_by_location(next_step, trail.last)
+          next_steps.map do |new_coord|
+            trails_that_go_the_next_mile << trail.dup.append(new_coord)
+          end
+        end
+        trails_so_far = trails_that_go_the_next_mile
+      end
+      @trails = trails_so_far
+    end
+
     def trailbutts
       return @trailbutts if @trailbutts
-      @trailbutts = []
       coords_reached = [coords]
       %w(1 2 3 4 5 6 7 8 9).each do |next_step|
         next_coords_reached = []
-        coords_reached.map do |location|
+        coords_reached.each do |location|
           next_coords_reached += coords_of_x_reachable_by_location(next_step, location)
         end
         coords_reached = next_coords_reached.uniq
