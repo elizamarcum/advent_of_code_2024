@@ -6,7 +6,9 @@ class Day9
   end
 
   def self.part2(input)
-    "TBD"
+    fs = Day9::WholeFileSystem.new(diskmap: input)
+    fs.compact!
+    fs.checksum
   end
 
   class FileSystem
@@ -14,7 +16,7 @@ class Day9
 
     def initialize(string_input = nil, diskmap: nil)
       units = string_input ? self.class.parse_from_string(string_input) : self.class.parse_diskmap(diskmap)
-      set_units(units)
+      update_units(units)
     end
 
     def all_free_space_contiguous?
@@ -42,7 +44,7 @@ class Day9
       @units
     end
 
-    def set_units(units)
+    def update_units(units)
       @units = units
     end
 
@@ -65,12 +67,86 @@ class Day9
     end
   end
 
+  class WholeFileSystem < FileSystem
+    def compact!(limit: nil)
+      @blocks = nil # Reset @blocks so that #blocks will recalculate it on next call
+      files_to_compact = @units.reject{|u| u.is_freespace?}.sort{|a, b| a.filename <=> b.filename }.reverse
+
+      compaction_count = 0
+      files_to_compact.each do |file|
+        compact_file!(file)
+        compaction_count += 1
+        return if limit and compaction_count >= limit
+      end
+    end
+
+    private
+
+    def blocks
+      @blocks ||= @units.map{ |unit| Array.new(unit.length){ |i| unit.symbol } }.flatten
+    end
+
+    def compact_file!(file)
+      location_of_file = @units.index(file)
+      free_space_needed = file.length
+      location_of_freespace = @units[0...location_of_file].index{ |unit| unit.is_freespace? and unit.length >= free_space_needed }
+      if location_of_freespace
+        freespace = @units[location_of_freespace]
+        @units[location_of_freespace] = file
+        # Adjust the freespace
+        if file.length == freespace.length
+          @units[location_of_file] = freespace
+        else
+          @units[location_of_file] = Unit.new(FileSystem::FREESPACE, file.length)
+          @units.insert(location_of_freespace + 1, Unit.new(FileSystem::FREESPACE, freespace.length - file.length))
+        end
+      end
+    end
+
+    def update_units(blocks)
+      @blocks = nil # Reset @blocks so that #blocks will recalculate it on next call
+      @units = [] # symbol, length
+
+      create_unit_from = ->(char) do
+        length = blocks.index{ |e| e != char } || blocks.length
+        blocks.slice!(0...length)
+        Unit.new(char, length)
+      end
+
+      until blocks.empty?
+        @units << create_unit_from.call(blocks[0])
+      end
+    end
+
+    class Unit
+      attr_reader :symbol, :length
+      def initialize(symbol, length)
+        @symbol = symbol
+        @length = length
+      end
+
+      def filename
+        @symbol unless is_freespace?
+      end
+
+      def inspect
+        "#<Unit '#{symbol}' x#{length}>"
+      end
+
+      def is_freespace?
+        @symbol == FileSystem::FREESPACE
+      end
+    end
+  end
+
   class BlockFileSystem < FileSystem
+    alias_method :update_blocks, :update_units
+
     def compact!(limit: nil)
       compaction_count = 0
       compacted = []
       free_space_to_add = 0
-      remaining = @units
+      remaining = blocks
       until remaining.empty? or (limit and compaction_count >= limit)
         # Confirm that there are filled blocks remaining
         final_occupied_block = remaining.rindex{|e| e != FREESPACE}
@@ -103,7 +179,7 @@ class Day9
       end
       # Update @units to contain the compacted blocks along with anything remaining
       # in the working list and all the free space
-      set_units(compacted + remaining + Array.new(free_space_to_add){ |i| FREESPACE })
+      update_blocks(compacted + remaining + Array.new(free_space_to_add){ |i| FREESPACE })
     end
   end
 end

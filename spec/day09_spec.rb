@@ -15,7 +15,6 @@ describe Day9 do
 
   describe "part2" do
     it "overall scenario" do
-      skip
       expected = 2858
       actual = Day9.part2(overall_scenario_input)
       _(actual).must_equal(expected)
@@ -136,6 +135,82 @@ describe Day9 do
           fs = Day9::BlockFileSystem.new(expected_output_4)
           fs.compact!(limit: 1)
           _(fs.to_s).must_equal expected_output_5
+        end
+      end
+    end
+  end
+
+  describe Day9::WholeFileSystem do
+    let(:input){ '00...111...2...333.44.5555.6666.777.888899' }
+    let(:expected_output_1){ '0099.111...2...333.44.5555.6666.777.8888..' }
+    let(:expected_output_2){ '0099.1117772...333.44.5555.6666.....8888..' }
+    let(:expected_output_3){ '0099.111777244.333....5555.6666.....8888..' }
+    let(:expected_output_4){ '00992111777.44.333....5555.6666.....8888..' }
+
+    describe "#blocks" do
+
+    end
+
+    describe "#units" do
+
+    end
+
+    describe "#compact! moves files one at a time from the end of the disk to the leftmost big-enough free space block until all free space is contiguousish" do
+      describe 'without limits' do
+        it 'fully compacts the example' do
+          fs = Day9::WholeFileSystem.new(input)
+          fs.compact!
+          _(fs.to_s).must_equal expected_output_4
+        end
+      end
+
+      describe "with limits" do
+        it 'limit 1 moves from initial input to process #9 into state 1' do
+          fs = Day9::WholeFileSystem.new(input)
+          fs.compact!(limit: 1)
+          _(fs.to_s).must_equal expected_output_1
+        end
+
+        it 'limit 2 moves from initial input to process #9-#8 still into state 1' do
+          fs = Day9::WholeFileSystem.new(input)
+          fs.compact!(limit: 2)
+          _(fs.to_s).must_equal expected_output_1
+        end
+
+        it 'limit 3 moves from initial to process #9-#7 to state 2' do
+          fs = Day9::WholeFileSystem.new(input)
+          fs.compact!(limit: 3)
+          _(fs.to_s).must_equal expected_output_2
+        end
+
+        it 'limit 4 moves from initial to process #9-#6 still into state 2' do
+          fs = Day9::WholeFileSystem.new(input)
+          fs.compact!(limit: 4)
+          _(fs.to_s).must_equal expected_output_2
+        end
+
+        it 'limit 5 moves from initial to process #9-#5 still into state 2' do
+          fs = Day9::WholeFileSystem.new(input)
+          fs.compact!(limit: 5)
+          _(fs.to_s).must_equal expected_output_2
+        end
+
+        it 'limit 6 moves from initial to process #9-#4 still into state 3' do
+          fs = Day9::WholeFileSystem.new(input)
+          fs.compact!(limit: 6)
+          _(fs.to_s).must_equal expected_output_3
+        end
+
+        it 'limit 7 moves from initial to process #9-#3 still into state 3' do
+          fs = Day9::WholeFileSystem.new(input)
+          fs.compact!(limit: 7)
+          _(fs.to_s).must_equal expected_output_3
+        end
+
+        it 'limit 8 moves from initial to process #9-#2 into state 4' do
+          fs = Day9::WholeFileSystem.new(input)
+          fs.compact!(limit: 8)
+          _(fs.to_s).must_equal expected_output_4
         end
       end
     end
