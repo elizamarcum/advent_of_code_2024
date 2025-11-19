@@ -52,11 +52,11 @@ class Day8
         antinodes = [coords_a, coords_b]
         [[iterate_positive, coords_a],
          [iterate_negative, coords_b]].each do |iterator, starting_coords|
-          next_position = iterator.call *starting_coords
-          while valid_coordinate? *next_position
+          next_position = iterator.call(*starting_coords)
+          while valid_coordinate?(*next_position)
             antinodes << next_position
             break unless @infinite_antinodes
-            next_position = iterator.call *next_position
+            next_position = iterator.call(*next_position)
           end
         end
         antinodes
@@ -64,7 +64,7 @@ class Day8
         [
           iterate_positive.call(a_x, a_y),
           iterate_negative.call(b_x, b_y)
-        ].filter{|coords| valid_coordinate? *coords }
+        ].filter{|coords| valid_coordinate?(*coords) }
       end
     end
   end
