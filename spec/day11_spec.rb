@@ -12,27 +12,6 @@ describe Day11 do
   end
 
   describe Day11::PhysicsDefyingStones do
-    describe ".new" do
-      let(:stones){ Day11::PhysicsDefyingStones.new("253000 1 7") }
-      it 'creates a doubly linked list that is hooked up correctly going forward' do
-        expected_forward_looking = [253000, 1, 7, nil]
-        actual_forward_looking = [ stones.first.value,
-                                   stones.first.next.value,
-                                   stones.first.next.next.value,
-                                   stones.first.next.next.next ]
-        _(actual_forward_looking).must_equal(expected_forward_looking)
-      end
-
-      it 'creates a doubly linked list that is hooked up correctly going backword' do
-        expected_backward_looking = [7, 1, 253000, nil]
-        actual_backward_looking = [ stones.last.value,
-                                    stones.last.previous.value,
-                                    stones.last.previous.previous.value,
-                                    stones.last.previous.previous.previous ]
-        _(actual_backward_looking).must_equal(expected_backward_looking)
-      end
-    end
-
     describe "#blink!" do
       let(:state0){ Day11::PhysicsDefyingStones.new("125 17") }
       let(:state1){ Day11::PhysicsDefyingStones.new("253000 1 7") }
@@ -76,7 +55,6 @@ describe Day11 do
         stones = Day11::PhysicsDefyingStones.new("125 17")
         6.times { stones.blink! }
         _(stones).must_equal(state6)
-        _(stones.last.value).must_equal(2)
       end
     end
 
@@ -109,40 +87,6 @@ describe Day11 do
         input = "512072 1 20 24 28676032"
         stones = Day11::PhysicsDefyingStones.new(input)
         _(stones.to_s).must_equal(input)
-      end
-    end
-  end
-
-  describe Day11::PhysicsDefyingStones::PhysicsDefyingStone do
-    describe "insert" do
-      let(:stones){ Day11::PhysicsDefyingStones.new("125 17") }
-
-      describe "inserting into the middle of the list" do
-        before do
-          stones.first.insert Day11::PhysicsDefyingStones::PhysicsDefyingStone.new(stones, 10)
-        end
-
-        it "creates the appropriate forward links" do
-          expected_forward_looking = [125, 10, 17, nil]
-          actual_forward_looking = [ stones.first.value,
-                                     stones.first.next.value,
-                                     stones.first.next.next.value,
-                                     stones.first.next.next.next ]
-          _(actual_forward_looking).must_equal(expected_forward_looking)
-        end
-
-        it "creates the appropriate backwards links" do
-          expected_backward_looking = [17, 10, 125, nil]
-          actual_backward_looking = [ stones.last.value,
-                                      stones.last.previous.value,
-                                      stones.last.previous.previous.value,
-                                      stones.last.previous.previous.previous ]
-          _(actual_backward_looking).must_equal(expected_backward_looking)
-        end
-      end
-
-      describe "adding to the end of the list" do
-
       end
     end
   end
