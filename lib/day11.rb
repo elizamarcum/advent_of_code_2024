@@ -1,24 +1,34 @@
 class Day11
   def self.part1(input)
-    stones = PhysicsDefyingStones.new(input)
-    25.times{ stones.blink! }
-    stones.count
+    blink!(input, 25)
   end
 
   def self.part2(input)
-    "TBD"
+    blink!(input, 75)
+  end
+
+  def self.blink!(input, n)
+    stones = PhysicsDefyingStones.new(input)
+    n.times do |i|
+      puts "Blink #{i+1} of #{n}"
+      stones.blink!
+    end
+    stones.count
   end
 
   class PhysicsDefyingStones
     include Enumerable
+    attr_reader :first
+    attr_accessor :last
 
     def initialize(input)
-      input.split(" ").inject(nil) do |previous, value|
-        next_stone = PhysicsDefyingStone.new(value.to_i)
-        if previous
-          previous.next = next_stone
+      input.split(" ").inject(nil) do |prior, value|
+        next_stone = PhysicsDefyingStone.new(self, value.to_i)
+        if prior
+          prior.insert next_stone
         else
           @first = next_stone
+          @last = next_stone
         end
         next_stone
       end
@@ -36,6 +46,14 @@ class Day11
       end
     end
 
+    def reverse_each(&block)
+      node = @last
+      while node
+        block.call(node)
+        node = node.previous
+      end
+    end
+
     def inspect
       "#<PhysicsDefyingStones #{to_s}>"
     end
@@ -49,7 +67,7 @@ class Day11
       node_a = @first
       node_b = other.first
       while node_a
-        return false unless node_a == node_b
+        return false unless node_a.value == node_b.value
         node_a = node_a.next
         node_b = node_b.next
       end
@@ -60,10 +78,11 @@ class Day11
     private
 
     class PhysicsDefyingStone
-      attr_accessor :next
+      attr_accessor :previous, :next
       attr_reader :value
 
-      def initialize(value)
+      def initialize(stones, value)
+        @list = stones
         @value = value
       end
 
@@ -80,8 +99,8 @@ class Day11
           # stone, and the right half of the digits are engraved on the new right stone. (The
           # new numbers don't keep extra leading zeroes: 1000 would become stones 10 and 0.)
           @value = digits.slice!(0...digits.length/2).to_i
-          new_stone = PhysicsDefyingStone.new(digits.to_i)
-          new_stone.next = self.next
+          new_stone = PhysicsDefyingStone.new(@list, digits.to_i)
+          insert(new_stone)
           self.next = new_stone
           return
         else
@@ -91,13 +110,26 @@ class Day11
         end
       end
 
-      def to_s
-        @value.to_s
+      def insert(other)
+        if other
+          if @list.last == self
+            @list.last = other
+          end
+          if @next
+            @next.previous = other
+          end
+          other.next = @next
+          other.previous = self
+        end
+        @next = other
       end
 
-      def ==(other)
-        return false unless other.is_a? PhysicsDefyingStone
-        self.value == other.value
+      def inspect
+        "#<Day11::PhysicsDefyingStones::PhysicsDefyingStone::#{object_id} #{@value}>"
+      end
+
+      def to_s
+        @value.to_s
       end
     end
   end
