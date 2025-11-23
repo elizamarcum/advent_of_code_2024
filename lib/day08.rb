@@ -1,4 +1,4 @@
-require_relative 'general_map'
+require_relative 'map'
 
 class Day8
   def self.part1(input)
@@ -11,7 +11,7 @@ class Day8
     map.antinode_locations.count
   end
 
-  class Map < GeneralMap
+  class Map < Map
     NON_ANTENNA = '.'
     attr_reader :antenna_types
 

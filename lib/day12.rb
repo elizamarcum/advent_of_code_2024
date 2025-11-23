@@ -1,4 +1,4 @@
-require_relative 'general_map'
+require_relative 'map'
 
 class Day12
   def self.part1(input)
@@ -10,7 +10,7 @@ class Day12
     "TBD"
   end
 
-  class Garden < GeneralMap
+  class Garden < Map
     attr_reader :plots
 
     def initialize(input)

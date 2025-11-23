@@ -1,7 +1,7 @@
 require 'matrix'
 require 'delegate'
 
-class GeneralMap < SimpleDelegator
+class Map < SimpleDelegator
   def initialize(input)
     grid = (input.is_a? Array)? input : input.split(/\n/).map{ |line| line.split(//) }
     super(Matrix[*grid])

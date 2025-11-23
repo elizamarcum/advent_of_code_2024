@@ -1,4 +1,4 @@
-require_relative 'general_map'
+require_relative 'map'
 
 class Day6
   def self.part1(input)
@@ -106,7 +106,7 @@ class Day6
     end
   end
 
-  class Map < GeneralMap
+  class Map < Map
     OPEN_SPACE = '.'
     MARK = 'X'
     NATURAL_OBSTRUCTION = '#'

@@ -1,8 +1,8 @@
 require_relative 'spec_helper'
 
-describe GeneralMap do
+describe Map do
   let(:map) do
-    GeneralMap.new( [ %w(x x x x),
+    Map.new( [ %w(x x x x),
                       %w(x x x x),
                       %w(x x x x) ] )
   end
@@ -30,7 +30,7 @@ describe GeneralMap do
 
   describe 'find_all' do
     let(:map) do
-      GeneralMap.new( [ %w(a b b a),
+      Map.new( [ %w(a b b a),
                         %w(b c d e),
                         %w(c f g a) ] )
     end

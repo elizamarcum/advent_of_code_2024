@@ -1,13 +1,13 @@
-require_relative 'general_map'
+require_relative 'map'
 
 class Day10
   def self.part1(input)
-    map = GeneralMap.new(input)
+    map = Map.new(input)
     Trailheads.for(map).sum { |trailhead| trailhead.trailbutts.count }
   end
 
   def self.part2(input)
-    map = GeneralMap.new(input)
+    map = Map.new(input)
     Trailheads.for(map).sum { |trailhead| trailhead.trails.count }
   end
 
