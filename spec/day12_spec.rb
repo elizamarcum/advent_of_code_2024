@@ -37,6 +37,27 @@ describe Day12 do
     STRING
   }
 
+  let(:example_4) {
+    <<~STRING
+      EEEEE
+      EXXXX
+      EEEEE
+      EXXXX
+      EEEEE
+    STRING
+  }
+
+  let(:example_5) {
+    <<~STRING
+      AAAAAA
+      AAABBA
+      AAABBA
+      ABBAAA
+      ABBAAA
+      AAAAAA
+    STRING
+  }
+
   describe "part1" do
     it "overall scenario" do
       expected = 1930
@@ -47,7 +68,7 @@ describe Day12 do
 
   describe "part2" do
     it "overall scenario" do
-      expected = "TBD"
+      expected = 1206
       actual = Day12.part2(example_3)
       _(actual).must_equal(expected)
     end
@@ -71,6 +92,26 @@ describe Day12 do
         actual = Day12::Garden.new(example_3).plots
         expected = %w(R I C F V J C E I M S)
         _(actual.map(&:designator)).must_equal(expected)
+      end
+    end
+
+    describe "total_discounted_fencing_cost" do
+      it 'calculates example 1' do
+        actual = Day12::Garden.new(example_1).total_discounted_fencing_cost
+        expected = 80
+        _(actual).must_equal(expected)
+      end
+
+      it 'calculates example 4' do
+        actual = Day12::Garden.new(example_4).total_discounted_fencing_cost
+        expected = 236
+        _(actual).must_equal(expected)
+      end
+
+      it 'calculates example 5' do
+        actual = Day12::Garden.new(example_5).total_discounted_fencing_cost
+        expected = 368
+        _(actual).must_equal(expected)
       end
     end
 
@@ -145,6 +186,51 @@ describe Day12 do
         plot = Day12::Garden.new(example_1).plots.find{|plot| plot.designator == 'C'}
         expected = 10
         _(plot.perimeter).must_equal(expected)
+      end
+    end
+
+    describe '#sides' do
+      it 'calculates the sides for the simplest quadrilateral plots' do
+        small_input =
+          <<~STRING
+            AABB
+            AACC
+            DDDD
+            DDDD
+          STRING
+        plot = Day12::Garden.new(small_input).plots.find{|plot| plot.designator == 'A'}
+        expected = 4
+        _(plot.sides).must_equal(expected)
+      end
+
+      it 'calculates the sides for a square plot' do
+        plot = Day12::Garden.new(example_1).plots.find{|plot| plot.designator == 'B'}
+        expected = 4
+        _(plot.sides).must_equal(expected)
+      end
+
+      it 'it calculates the sides for a squiggly plot' do
+        plot = Day12::Garden.new(example_1).plots.find{|plot| plot.designator == 'C'}
+        expected = 8
+        _(plot.sides).must_equal(expected)
+      end
+
+      it 'calculates the sides for a plot with holes in' do
+        plot = Day12::Garden.new(example_5).plots.find{|plot| plot.designator == 'A'}
+        expected = 12
+        _(plot.sides).must_equal(expected)
+      end
+
+      it 'calculates the sides for a plot with an E shape' do
+        plot = Day12::Garden.new(example_4).plots.find{|plot| plot.designator == 'E'}
+        expected = 12
+        _(plot.sides).must_equal(expected)
+      end
+
+      it 'calculates the sides for a plot with a non-unique designator' do
+        plot = Day12::Garden.new(example_4).plots.find{|plot| plot.designator == 'X'}
+        expected = 4
+        _(plot.sides).must_equal(expected)
       end
     end
   end
