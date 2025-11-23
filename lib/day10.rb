@@ -64,15 +64,9 @@ class Day10
     def coords_of_x_reachable_by_location(next_step, location)
       x, y = location
       output = []
-      variations = [
-        [1, 0],
-        [0, 1],
-        [-1, 0],
-        [0, -1]
-      ]
-      variations.each do |d_x, d_y|
-        test_x = x + d_x
-        test_y = y + d_y
+      Map::Directions.each do |direction|
+        test_x = x + direction.delta_x
+        test_y = y + direction.delta_y
         if @map.valid_coordinate?(test_x, test_y) and @map[test_x, test_y] == next_step
           output << [test_x, test_y]
         end
