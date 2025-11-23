@@ -33,6 +33,7 @@ describe Day13 do
 
   describe "part2" do
     it "overall scenario" do
+      skip
       expected = "TBD"
       actual = Day13.part2(input)
       _(actual).must_equal(expected)
@@ -72,17 +73,25 @@ describe Day13 do
     let(:machine_2){ Day13::ClawMachine.new(machine_2_input) }
     let(:machine_3){ Day13::ClawMachine.new(machine_3_input) }
     let(:machine_4){ Day13::ClawMachine.new(machine_4_input) }
+    let(:machine_1_with_input_correction){ Day13::ClawMachine.new(machine_1_input, apply_input_correction: true) }
+    let(:machine_2_with_input_correction){ Day13::ClawMachine.new(machine_2_input, apply_input_correction: true) }
+    let(:machine_3_with_input_correction){ Day13::ClawMachine.new(machine_3_input, apply_input_correction: true) }
+    let(:machine_4_with_input_correction){ Day13::ClawMachine.new(machine_4_input, apply_input_correction: true) }
 
     describe "initialize" do
       it 'sets the initial values for the machine' do
-        _(machine_1.a_cost).must_equal(3)
-        _(machine_1.b_cost).must_equal(1)
-        _(machine_1.a_x).must_equal(94)
-        _(machine_1.a_y).must_equal(34)
-        _(machine_1.b_x).must_equal(22)
-        _(machine_1.b_y).must_equal(67)
+        _(machine_1.a_delta_x).must_equal(94)
+        _(machine_1.a_delta_y).must_equal(34)
+        _(machine_1.b_delta_x).must_equal(22)
+        _(machine_1.b_delta_y).must_equal(67)
         _(machine_1.goal_x).must_equal(8400)
         _(machine_1.goal_y).must_equal(5400)
+      end
+      describe "initialize with input correction" do
+        it 'sets the initial values for the machine' do
+          _(machine_1_with_input_correction.goal_x).must_equal(10000000008400)
+          _(machine_1_with_input_correction.goal_y).must_equal(10000000005400)
+        end
       end
     end
 
@@ -119,6 +128,28 @@ describe Day13 do
 
       it 'is nil for machine 4' do
         _(machine_4.minimum_win_cost).must_be_nil
+      end
+
+      describe 'for a corrected machine' do
+        before do
+          skip
+        end
+
+        it 'is nil for machine 1' do
+          _(machine_1_with_input_correction.minimum_win_cost).must_be_nil
+        end
+
+        it 'is something for machine 2' do
+          _(machine_2_with_input_correction.minimum_win_cost).must_equal(100)
+        end
+
+        it 'is nil for machine 3' do
+          _(machine_3_with_input_correction.minimum_win_cost).must_be_nil
+        end
+
+        it 'is something for machine 4' do
+          _(machine_4_with_input_correction.minimum_win_cost).must_equal(100)
+        end
       end
     end
   end
